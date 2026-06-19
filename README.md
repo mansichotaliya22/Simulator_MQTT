@@ -235,4 +235,4 @@ Simulator/
 
 **Mansi Chotaliya**
 
-IoT Weather Fusion Simulator – Real-Time Weather Monitoring System using MQTT, EMQX, MongoDB, Docker, and Flask.
+IoT Weather Simulator – Real-Time Weather Monitoring System using MQTT, EMQX, MongoDB, Docker, and Flask.
