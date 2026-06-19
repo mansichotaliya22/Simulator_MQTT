@@ -1,0 +1,74 @@
+services:
+  emqx:
+    image: emqx/emqx:5.8.0
+    container_name: emqx
+    ports:
+      - "1883:1883"   # MQTT
+      - "8083:8083"   # MQTT over WebSocket
+      - "8084:8084"   # MQTT over WSS
+      - "8883:8883"   # MQTTS
+      - "18083:18083" # EMQX Dashboard (http://localhost:18083, default login admin/public)
+    volumes:
+      - emqx-data:/opt/emqx/data
+      - emqx-log:/opt/emqx/log
+
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  subscriber:
+    build: .
+    container_name: weather_subscriber
+    command: python -m subscriber.subscriber
+    env_file:
+      - .env
+    environment:
+      MQTT_HOST: emqx
+      MQTT_PORT: 1883
+      MONGO_URI: mongodb://mongo:27017
+    depends_on:
+      emqx:
+        condition: service_started
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  dashboard:
+    build: .
+    container_name: weather_dashboard
+    command: python -m dashboard.app
+    env_file:
+      - .env
+    environment:
+      MQTT_HOST: emqx
+      MQTT_PORT: 1883
+      MONGO_URI: mongodb://mongo:27017
+    ports:
+      - "5000:5000"
+    depends_on:
+      emqx:
+        condition: service_started
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  emqx-data:
+  emqx-log:
+  mongo-data:

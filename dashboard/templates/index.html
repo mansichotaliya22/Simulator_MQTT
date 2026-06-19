@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<main>
+    <h1>Weather Dashboard</h1>
+
+    <form method="post">
+        <input type="text" name="city" placeholder="Enter city name" required>
+        <button type="submit">Get Weather</button>
+    </form>
+
+    {% if message %}
+    <p class="message">{{ message }}</p>
+    {% endif %}
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <table>
+        <tr>
+            <th>City</th>
+            <th>Temperature</th>
+            <th>Humidity</th>
+            <th>Pressure</th>
+        </tr>
+
+        {% for d in data %}
+        <tr>
+            <td>{{ d.city }}</td>
+            <td>{{ d.temperature }}</td>
+            <td>{{ d.humidity }}</td>
+            <td>{{ d.pressure }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</main>
+
+</body>
+</html>
