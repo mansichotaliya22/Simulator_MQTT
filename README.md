@@ -1,4 +1,4 @@
-# Weather Fusion Simulator
+# Weather Simulator
 
 A real-time weather monitoring system that fetches weather data from OpenWeatherMap, WeatherAPI, and Tomorrow.io, fuses the readings, publishes them through MQTT using EMQX, stores them in MongoDB, and displays the latest records on a Flask dashboard.
 
